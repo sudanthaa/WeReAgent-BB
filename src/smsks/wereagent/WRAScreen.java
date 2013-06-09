@@ -36,8 +36,16 @@ public final class WRAScreen extends MainScreen {
 		});
     }
     
-  
     private void onPressServiceButton() {
     	
+    }
+    
+    private boolean startServer() {
+    
+    	return true;
+    }
+    
+    private boolean stopServer() {
+    	return true;
     }
 }
