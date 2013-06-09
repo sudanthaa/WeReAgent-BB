@@ -22,8 +22,8 @@ public final class WRAScreen extends MainScreen {
         // Set the displayed title of the screen       
         setTitle("WeReAgent");
         
-        startButton = new ButtonField("Start Server");
-        stopButton = new ButtonField("Start Server");
+        startButton = new ButtonField("Start Server", ButtonField.CONSUME_CLICK | Field.FIELD_LEADING);
+        stopButton = new ButtonField("Stop Server", ButtonField.CONSUME_CLICK | Field.FIELD_LEADING);
         
         startButton.setChangeListener(new FieldChangeListener() {
 			public void fieldChanged(Field field, int context) {
@@ -41,15 +41,16 @@ public final class WRAScreen extends MainScreen {
         stopButton.setEnabled(false);
         add(startButton);
         add(stopButton);
+        
     }
     
     private void onPressStart() {
-    	Dialog.alert("Button Proessed");
+    	Dialog.alert("Button Pressed");
     	startServer();
     }
     
     private void onPressStop() {
-    	Dialog.alert("Button Proessed");
+    	Dialog.alert("Button Pressed");
     	stopServer();
     }
     
@@ -57,6 +58,8 @@ public final class WRAScreen extends MainScreen {
     	if (server != null)
     		return true;
     	
+    	stopButton.setEnabled(true);
+    	startButton.setEnabled(false);
     	server = new WRAServer();
     	server.start();
     	
@@ -64,6 +67,9 @@ public final class WRAScreen extends MainScreen {
     }
     
     private boolean stopServer() {
+    	server = null;
+    	stopButton.setEnabled(false);
+    	startButton.setEnabled(true);
     	return true;
     }
 }
