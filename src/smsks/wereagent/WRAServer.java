@@ -54,7 +54,10 @@ public class WRAServer extends Thread {
 		        WRARequest downloaderRequest =  WRARequest.extract(brDownloader);
 		        
 		        if (downloaderRequest == null)
+		        {
+		        	brDownloader.close();
 		        	break;
+		        }
 	        	
 			}
 		}
