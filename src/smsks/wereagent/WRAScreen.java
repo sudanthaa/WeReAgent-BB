@@ -37,11 +37,8 @@ public final class WRAScreen extends MainScreen {
 			}
 		});
         
-        startButton.setEnabled(true);
-        stopButton.setEnabled(false);
         add(startButton);
         add(stopButton);
-        
     }
     
     private void onPressStart() {
@@ -57,9 +54,7 @@ public final class WRAScreen extends MainScreen {
     private boolean startServer() {
     	if (server != null)
     		return true;
-    	
-    	stopButton.setEnabled(true);
-    	startButton.setEnabled(false);
+    
     	server = new WRAServer();
     	server.start();
     	
@@ -67,9 +62,11 @@ public final class WRAScreen extends MainScreen {
     }
     
     private boolean stopServer() {
+    	if (server == null)
+    		return true;
+    	
+    	server.halt();
     	server = null;
-    	stopButton.setEnabled(false);
-    	startButton.setEnabled(true);
     	return true;
     }
 }
