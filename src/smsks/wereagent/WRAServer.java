@@ -14,7 +14,6 @@ import net.rim.device.api.io.transport.ConnectionDescriptor;
 import net.rim.device.api.io.transport.ConnectionFactory;
 import net.rim.device.api.io.transport.TransportInfo;
 import net.rim.device.api.io.transport.options.TcpCellularOptions;
-import net.rim.device.api.ui.component.Dialog;
 import net.rim.device.api.util.Arrays;
 
 import smsks.wereagent.util.WRABufferedReader;
@@ -85,7 +84,7 @@ public class WRAServer extends Thread {
 				connDownloader.close();
 			}
 		} catch (Exception e) {
-			
+			setStatus("Server failed: " + e.toString());
 		}
 	}
 	

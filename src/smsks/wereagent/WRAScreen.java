@@ -16,8 +16,7 @@ import net.rim.device.api.ui.container.MainScreen;
 public final class WRAScreen extends MainScreen {
 	
 	WRAServer server = null;
-	ButtonField startButton = null;
-	ButtonField stopButton = null;
+	ButtonField serverButton = null;
 	LabelField statsusLabel = null;
 	LabelField requestContentLabel = null;
 	LabelField responseContentLabel = null;
@@ -33,19 +32,18 @@ public final class WRAScreen extends MainScreen {
         Font smallFont = null;
         try {
             FontFamily fontFam = FontFamily.forName("BBMillbank");
-            smallFont = fontFam.getFont(Font.PLAIN, 8);
+            smallFont = fontFam.getFont(Font.PLAIN, 10);
         } catch (ClassNotFoundException e) {
             System.out.println("The specified font family was not found.");
         }
         
-        statsusLabel = new LabelField("Hello Therer How are you", LabelField.ELLIPSIS | Field.FIELD_HCENTER);
-        startButton = new ButtonField("Start Server", ButtonField.CONSUME_CLICK | Field.FIELD_HCENTER);
-        stopButton = new ButtonField("Stop Server", ButtonField.CONSUME_CLICK | Field.FIELD_HCENTER);
-        startButton.setMargin(5, 5, 5, 5);
-        stopButton.setMargin(5, 5, 5, 5);
+        statsusLabel = new LabelField("Idle..", LabelField.ELLIPSIS | Field.FIELD_HCENTER);
+        serverButton = new ButtonField(" Start Server ", ButtonField.CONSUME_CLICK | Field.FIELD_HCENTER);
+        statsusLabel.setMargin(5, 5, 5, 5);
+        serverButton.setMargin(5, 5, 5, 5);
         
-        requestContentLabel = new LabelField("Request: ", LabelField.ELLIPSIS | Field.FIELD_HCENTER);
-        responseContentLabel = new LabelField("Response", LabelField.ELLIPSIS | Field.FIELD_HCENTER);
+        requestContentLabel = new LabelField("Request: ", LabelField.ELLIPSIS | Field.FIELD_LEFT);
+        responseContentLabel = new LabelField("Response: ", LabelField.ELLIPSIS | Field.FIELD_LEFT);
         requestContentLabel.setMargin(5, 5, 5, 5);
         responseContentLabel.setMargin(5, 5, 5, 5);
         if (smallFont != null) {
@@ -53,15 +51,9 @@ public final class WRAScreen extends MainScreen {
         	responseContentLabel.setFont(smallFont);
         }
         
-        startButton.setChangeListener(new FieldChangeListener() {
+        serverButton.setChangeListener(new FieldChangeListener() {
 			public void fieldChanged(Field field, int context) {
-				onPressStart();
-			}
-		});
-        
-        stopButton.setChangeListener(new FieldChangeListener() {
-			public void fieldChanged(Field field, int context) {
-				onPressStop();
+				onPressServerButton();
 			}
 		});
         
@@ -73,8 +65,9 @@ public final class WRAScreen extends MainScreen {
 		}, 1000, 1000);    
         
         add(statsusLabel);
-        add(startButton);
-        add(stopButton);
+        add(serverButton);
+        add(requestContentLabel);
+        add(responseContentLabel);
     }
     
     private void onTimerThreadTimerEvent() {
@@ -89,21 +82,32 @@ public final class WRAScreen extends MainScreen {
     	if (server == null)
     		return;
     	
-    	int statsuSeed = server.getStatusSeed();
-    	if (this.statusSeed != statsuSeed) {
-    		server.getStatus();
-    		this.statusSeed = statsuSeed;
+    	int statusSeed = server.getStatusSeed();
+    	if (this.statusSeed != statusSeed) {
+    		this.statusSeed = statusSeed;
+    		statsusLabel.setText(server.getStatus(), 0,-1);
+    	}
+    	
+    	int requestSeed = server.getReqestSeed();
+    	if (this.requestSeed != requestSeed) {
+    		this.requestSeed = requestSeed;
+    		requestContentLabel.setText("Request:\n" + server.getRequest(), 0,-1);
+    	}
+    	
+    	int responseSeed = server.getResponseSeed();
+    	if (this.responseSeed != responseSeed) {
+    		this.responseSeed = responseSeed;
+    		responseContentLabel.setText("Response:\n" + server.getResponse(), 0,-1);
     	}
     }
     
-    private void onPressStart() {
+    private void onPressServerButton() {
     	Dialog.alert("Button Pressed");
-    	startServer();
-    }
-    
-    private void onPressStop() {
-    	Dialog.alert("Button Pressed");
-    	stopServer();
+    	
+    	if (server == null)
+    		startServer();
+    	else 
+    		stopServer();
     }
     
     private boolean startServer() {
@@ -112,6 +116,7 @@ public final class WRAScreen extends MainScreen {
     
     	server = new WRAServer(uuid);
     	server.start();
+    	serverButton.setLabel(" Stop Server ");
     	
     	return true;
     }
@@ -122,6 +127,7 @@ public final class WRAScreen extends MainScreen {
     	
     	server.halt();
     	server = null;
+    	serverButton.setLabel(" Start Server ");
     	return true;
     }
 }
