@@ -2,7 +2,7 @@ package smsks.wereagent;
 
 import smsks.wereagent.util.WRABufferedReader;
 
-public class WRARequest {
+public class WRAWebRequsetResponse {
 
 	String[] requestLines = null;
 	String server = "";
@@ -11,9 +11,9 @@ public class WRARequest {
 	
 	private static final int maxLines = 30;
 	
-	public static WRARequest extract(WRABufferedReader br) {
+	public static WRAWebRequsetResponse extract(WRABufferedReader br) {
 		
-		WRARequest request = new WRARequest();
+		WRAWebRequsetResponse request = new WRAWebRequsetResponse();
 		
 		String line = br.readLine();
 		while (line.length() > 0) {
@@ -34,7 +34,7 @@ public class WRARequest {
 		return request;
 	}
 	
-	public WRARequest()	{
+	public WRAWebRequsetResponse()	{
 		requestLines = new String[maxLines];
 	}
 	
@@ -42,7 +42,7 @@ public class WRARequest {
 		requestLines[lineCount++] = line;
 	}
 	
-	public String getFullRequest() {		
+	public String getContent() {		
 		StringBuffer sb = new StringBuffer();
 		
 		for (int i = 0; i < lineCount; i++) {
@@ -51,5 +51,9 @@ public class WRARequest {
 		
 		sb.append("\r\n");
 		return sb.toString();
+	}
+	
+	public String getServer() {
+		return server;
 	}
 }

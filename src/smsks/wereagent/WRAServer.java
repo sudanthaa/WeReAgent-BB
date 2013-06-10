@@ -2,9 +2,12 @@ package smsks.wereagent;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 
 import javax.microedition.io.Connection;
 import javax.microedition.io.Connector;
+import javax.microedition.io.InputConnection;
+import javax.microedition.io.OutputConnection;
 import javax.microedition.io.StreamConnection;
 import javax.microedition.io.StreamConnectionNotifier;
 
@@ -58,7 +61,7 @@ public class WRAServer extends Thread {
 		        WRABufferedReader brDownloader = new WRABufferedReader(isDownloader);
 		        
 		        setStatus("Reading client request");
-		        WRARequest downloaderRequest =  WRARequest.extract(brDownloader);
+		        WRAWebRequsetResponse downloaderRequest =  WRAWebRequsetResponse.extract(brDownloader);
 		        
 		        setStatus("Request read complete");
 		        
@@ -66,9 +69,14 @@ public class WRAServer extends Thread {
 		        	brDownloader.close();
 		        	break;
 		        }
-	        	
-		        setStatus("Conntecting to server");
+		        WRAWebRequsetResponse wsResponse = getServerResponse(downloaderRequest);
+		        if (wsResponse == null) {
+		        	connDownloader.close();
+		        	continue;
+		        }
 		        
+		        osDownloader.write(wsResponse.getContent().getBytes());
+		        setStatus("Conntecting to server");
 			}
 		}
 		catch (Exception e) {
@@ -115,7 +123,7 @@ public class WRAServer extends Thread {
 		return response;
 	}
 	
-	private WRARequest getServerResponse(WRARequest downloaderRequest) {
+	private WRAWebRequsetResponse getServerResponse(WRAWebRequsetResponse downloaderRequest) {
 
 		ConnectionFactory factory = new ConnectionFactory();
 		int[] aTransports = { 
@@ -146,10 +154,46 @@ public class WRAServer extends Thread {
 		factory.setTransportTypeOptions(
 				TransportInfo.TRANSPORT_TCP_CELLULAR, tcpOptions);
 		factory.setAttemptsLimit(5);
+		
+		setStatus("Connecting to web server");
 
-		String connString = "socket://" + downloaderRequest.server + ":80";
+		String connString = "socket://" + downloaderRequest.getServer() + ":80";
 		ConnectionDescriptor cd = factory.getConnection(connString);
 		Connection c = cd.getConnection();
+		
+		if (c == null)
+		{
+			setStatus("Web server connection failed.");
+			return null;
+		}
+		
+		setStatus("Connected to server");
+		OutputConnection oc = (OutputConnection)c;
+		InputConnection ic = (InputConnection)c;
+		
+		try {
+			setStatus("Writing reqeust to web server");
+			DataOutputStream dos = oc.openDataOutputStream();
+			dos.write(downloaderRequest.getContent().getBytes());
+			dos.flush();
+			
+			setStatus("Reading response from web server");
+			DataInputStream dis = ic.openDataInputStream();
+			WRABufferedReader br = new WRABufferedReader(dis);
+			WRAWebRequsetResponse reqeust = WRAWebRequsetResponse.extract(br);
+			
+			if (reqeust == null) {
+				c.close();
+				return null;
+			}
+			
+			return reqeust;
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 		return null;
 	}
