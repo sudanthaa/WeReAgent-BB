@@ -2,7 +2,6 @@ package smsks.wereagent;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 
 import javax.microedition.io.Connection;
 import javax.microedition.io.Connector;
@@ -46,42 +45,44 @@ public class WRAServer extends Thread {
         // Open a connection and wait for client requests
 		
 		try {
-			while (true) {
-				setStatus("Starting server");
-		        StreamConnectionNotifier service = (StreamConnectionNotifier) Connector.open(
-		        		"btspp://localhost:" + "00" + ";name=" + "WeReAgent");
-		        
-		        setStatus("Accepting clients");
-		        StreamConnection connDownloader = service.acceptAndOpen();
-		        
-		        setStatus("Client connected");
-		        
-		        DataInputStream isDownloader = connDownloader.openDataInputStream();
-		        DataOutputStream osDownloader = connDownloader.openDataOutputStream();
-		        WRABufferedReader brDownloader = new WRABufferedReader(isDownloader);
-		        
-		        setStatus("Reading client request");
-		        WRAWebRequsetResponse downloaderRequest =  WRAWebRequsetResponse.extract(brDownloader);
-		        
-		        setStatus("Request read complete");
-		        
-		        if (downloaderRequest == null) {
-		        	brDownloader.close();
-		        	break;
-		        }
-		        WRAWebRequsetResponse wsResponse = getServerResponse(downloaderRequest);
-		        if (wsResponse == null) {
-		        	connDownloader.close();
-		        	continue;
-		        }
-		        
-		        osDownloader.write(wsResponse.getContent().getBytes());
-		        setStatus("Conntecting to server");
+			setStatus("Starting server");
+			StreamConnectionNotifier service = (StreamConnectionNotifier) Connector.open(
+					"btspp://localhost:" + "00" + ";name=" + "WeReAgent");
+			
+			while (true) {  
+				setStatus("Accepting clients");
+				StreamConnection connDownloader = service.acceptAndOpen();
+
+				setStatus("Client connected");
+
+				DataInputStream isDownloader = connDownloader.openDataInputStream();
+				DataOutputStream osDownloader = connDownloader.openDataOutputStream();
+				WRABufferedReader brDownloader = new WRABufferedReader(isDownloader);
+
+				setStatus("Reading client request");
+				WRAWebRequsetResponse downloaderRequest =  
+						WRAWebRequsetResponse.extract(brDownloader);
+
+				setStatus("Request read complete");
+
+				if (downloaderRequest == null) {
+					brDownloader.close();
+					break;
+				}
+				WRAWebRequsetResponse webServerResponse = getServerResponse(downloaderRequest);
+				if (webServerResponse == null) {
+					connDownloader.close();
+					continue;
+				}
+
+				setStatus("Sending the result to downloader");
+				osDownloader.write(webServerResponse.getContent().getBytes());
+
+				connDownloader.close();
 			}
+		} catch (Exception e) {
+
 		}
-		catch (Exception e) {
-        
-        }
 	}
 	
 	private synchronized void setStatus(String status) {
