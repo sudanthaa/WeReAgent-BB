@@ -1,13 +1,12 @@
 package smsks.wereagent;
 
-import java.io.DataInputStream;
-
 import smsks.wereagent.util.WRABufferedReader;
 
 public class WRARequest {
 
 	String[] requestLines = null;
 	String server = "";
+	int contentLength;
 	int lineCount = 0;
 	
 	private static final int maxLines = 30;
@@ -18,6 +17,17 @@ public class WRARequest {
 		
 		String line = br.readLine();
 		while (line.length() > 0) {
+			int devider = line.indexOf(':');
+			if (devider > -1) {
+				String sKey = (line.substring(0, devider)).trim();
+				String sValue = (line.substring(devider + 1)).trim();
+				if (sKey == "Host") {
+					request.server = sValue;
+				}
+				else if (sKey == "Content-Length") {
+					//
+				}
+			}
 			request.addLine(line);
 			line = br.readLine();
 		}
@@ -36,8 +46,7 @@ public class WRARequest {
 		StringBuffer sb = new StringBuffer();
 		
 		for (int i = 0; i < lineCount; i++) {
-			sb.append(requestLines[i]);
-			sb.append("\r\n");
+			sb.append(requestLines[i] + "\r\n");
 		}
 		
 		sb.append("\r\n");

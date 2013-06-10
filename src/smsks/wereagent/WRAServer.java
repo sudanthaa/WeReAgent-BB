@@ -36,8 +36,7 @@ public class WRAServer extends Thread {
         // Open a connection and wait for client requests
 		
 		try {
-			while (true)
-			{
+			while (true) {
 				setStatus("Starting server");
 		        StreamConnectionNotifier service = (StreamConnectionNotifier) Connector.open(
 		        		"btspp://localhost:" + "00" + ";name=" + "WeReAgent");
@@ -49,16 +48,20 @@ public class WRAServer extends Thread {
 		        
 		        DataInputStream isDownloader = connDownloader.openDataInputStream();
 		        DataOutputStream osDownloader = connDownloader.openDataOutputStream();
-		        
 		        WRABufferedReader brDownloader = new WRABufferedReader(isDownloader);
+		        
+		        setStatus("Reading client request");
 		        WRARequest downloaderRequest =  WRARequest.extract(brDownloader);
 		        
-		        if (downloaderRequest == null)
-		        {
+		        setStatus("Request read complete");
+		        
+		        if (downloaderRequest == null) {
 		        	brDownloader.close();
 		        	break;
 		        }
 	        	
+		        setStatus("Conntecting to server");
+		        
 			}
 		}
 		catch (Exception e) {
