@@ -14,6 +14,7 @@ import net.rim.device.api.io.transport.ConnectionDescriptor;
 import net.rim.device.api.io.transport.ConnectionFactory;
 import net.rim.device.api.io.transport.TransportInfo;
 import net.rim.device.api.io.transport.options.TcpCellularOptions;
+import net.rim.device.api.ui.component.Dialog;
 import net.rim.device.api.util.Arrays;
 
 import smsks.wereagent.util.WRABufferedReader;
@@ -23,11 +24,14 @@ public class WRAServer extends Thread {
 	String status = "";
 	String request = "";
 	String response = "";
+	String uuid = "";
 	int statusSeed = 0;
 	int requestSeed = 0;
 	int responseSeed = 0;
 	
-	public WRAServer() {
+	public WRAServer(String uuid) {
+		
+		this.uuid = uuid;
 		setStatus("Not Ready.");
 		setResponse("");
 		setRequest("");
@@ -47,7 +51,7 @@ public class WRAServer extends Thread {
 		try {
 			setStatus("Starting server");
 			StreamConnectionNotifier service = (StreamConnectionNotifier) Connector.open(
-					"btspp://localhost:" + "00" + ";name=" + "WeReAgent");
+					"btspp://localhost:" + uuid + ";name=" + "WeReAgent");
 			
 			while (true) {  
 				setStatus("Accepting clients");
@@ -81,7 +85,7 @@ public class WRAServer extends Thread {
 				connDownloader.close();
 			}
 		} catch (Exception e) {
-
+			
 		}
 	}
 	
