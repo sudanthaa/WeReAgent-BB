@@ -6,6 +6,7 @@ public class WRAWebRequsetResponse {
 
 	String[] requestLines = null;
 	String server = "";
+	String requestType = "";
 	int contentLength;
 	int lineCount = 0;
 	
@@ -15,11 +16,20 @@ public class WRAWebRequsetResponse {
 		
 		WRAWebRequsetResponse request = new WRAWebRequsetResponse();
 		
+		int iLine = 0;
 		String line = br.readLine();
 		while (line.length() > 0) {
+			
+			if (iLine == 0) {
+				int devider = line.indexOf(' ');
+				if (devider > -1) {
+					request.requestType = (line.substring(0, devider)).trim();
+				}
+			}
+			
 			int devider = line.indexOf(':');
 			if (devider > -1) {
-				String sKey = (line.substring(0, devider)).trim();
+				String sKey = (line.substring(0, devider - 1)).trim();
 				String sValue = (line.substring(devider + 1)).trim();
 				if (sKey == "Host") {
 					request.server = sValue;
@@ -29,6 +39,7 @@ public class WRAWebRequsetResponse {
 				}
 			}
 			request.addLine(line);
+			iLine++;
 			line = br.readLine();
 		}
 		return request;
@@ -55,5 +66,9 @@ public class WRAWebRequsetResponse {
 	
 	public String getServer() {
 		return server;
+	}
+	
+	public String getRequestType() {
+		return requestType;
 	}
 }

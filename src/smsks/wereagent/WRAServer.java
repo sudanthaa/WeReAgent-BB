@@ -40,7 +40,33 @@ public class WRAServer extends Thread {
 		serverLoop();
 	}
 	
+	// Run in UI thread.
 	public boolean halt() {
+		
+		try {
+			StreamConnection sc = (StreamConnection)Connector.open(
+					"btspp://localhost:" + uuid + ";name=" + "WeReAgent");
+			
+			DataOutputStream dos = sc.openDataOutputStream();
+			String closeReqeust = "CLOSE / HTTP/1.1\r\n\r\n";
+			dos.write(closeReqeust.getBytes());
+			dos.flush();
+			
+			dos.close();
+			sc.close();
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return true;
 	}
 	
@@ -69,9 +95,16 @@ public class WRAServer extends Thread {
 				setStatus("Request read complete");
 
 				if (downloaderRequest == null) {
+					connDownloader.close();
 					brDownloader.close();
 					break;
 				}
+				
+				if (downloaderRequest.getRequestType() == "CLOSE") {
+					connDownloader.close();
+					brDownloader.close();
+				}
+				
 				WRAWebRequsetResponse webServerResponse = getServerResponse(downloaderRequest);
 				if (webServerResponse == null) {
 					connDownloader.close();
