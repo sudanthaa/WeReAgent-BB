@@ -101,9 +101,7 @@ public final class WRAScreen extends MainScreen {
     	}
     }
     
-    private void onPressServerButton() {
-    	Dialog.alert("Button Pressed");
-    	
+    private void onPressServerButton() {    	
     	if (server == null)
     		startServer();
     	else 

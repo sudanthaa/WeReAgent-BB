@@ -43,6 +43,25 @@ public class WRAServer extends Thread {
 	// Run in UI thread.
 	public boolean halt() {
 		
+		Thread closer = new Thread(new Runnable() {
+			public void run() {
+				closeConnection();
+			}
+		});
+		
+		closer.start();
+		
+		try {
+			join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return true;
+	}
+	
+	private void closeConnection() {
 		try {
 			StreamConnection sc = (StreamConnection)Connector.open(
 					"btspp://localhost:" + uuid + ";name=" + "WeReAgent");
@@ -59,15 +78,6 @@ public class WRAServer extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		try {
-			join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return true;
 	}
 	
 	private void serverLoop() {
@@ -103,6 +113,7 @@ public class WRAServer extends Thread {
 				if (downloaderRequest.getRequestType() == "CLOSE") {
 					connDownloader.close();
 					brDownloader.close();
+					break;
 				}
 				
 				WRAWebRequsetResponse webServerResponse = getServerResponse(downloaderRequest);
