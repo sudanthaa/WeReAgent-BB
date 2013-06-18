@@ -116,11 +116,15 @@ public class WRAServer extends Thread {
 					break;
 				}
 				
+				setRequest(downloaderRequest.getContent());
+				
 				WRAWebRequsetResponse webServerResponse = getServerResponse(downloaderRequest);
 				if (webServerResponse == null) {
 					connDownloader.close();
 					continue;
 				}
+				
+				setResponse(webServerResponse.getContent());
 
 				setStatus("Sending the result to downloader");
 				osDownloader.write(webServerResponse.getContent().getBytes());

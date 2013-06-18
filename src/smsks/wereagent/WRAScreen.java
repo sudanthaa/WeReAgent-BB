@@ -37,13 +37,13 @@ public final class WRAScreen extends MainScreen {
             System.out.println("The specified font family was not found.");
         }
         
-        statsusLabel = new LabelField("Idle..", LabelField.ELLIPSIS | Field.FIELD_HCENTER);
+        statsusLabel = new LabelField("Idle..", Field.FIELD_HCENTER);
         serverButton = new ButtonField(" Start Server ", ButtonField.CONSUME_CLICK | Field.FIELD_HCENTER);
         statsusLabel.setMargin(5, 5, 5, 5);
         serverButton.setMargin(5, 5, 5, 5);
         
-        requestContentLabel = new LabelField("Request: ", LabelField.ELLIPSIS | Field.FIELD_LEFT);
-        responseContentLabel = new LabelField("Response: ", LabelField.ELLIPSIS | Field.FIELD_LEFT);
+        requestContentLabel = new LabelField("Request: ",  Field.FIELD_LEFT);
+        responseContentLabel = new LabelField("Response: ", Field.FIELD_LEFT);
         requestContentLabel.setMargin(5, 5, 5, 5);
         responseContentLabel.setMargin(5, 5, 5, 5);
         if (smallFont != null) {

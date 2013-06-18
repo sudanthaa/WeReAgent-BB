@@ -15,11 +15,11 @@ public class WRABufferedReader {
 	public String readLine() {
 		
 		int iState = 0;    //   1-First \ read, 2-Both \r read, 3-All \r\ read, 
-		StringBuffer sb = new StringBuffer();
+		StringBuffer sb = new StringBuffer("");
 		
 		try {
 			while (true) {
-				char c = dis.readChar();
+				char c = (char) dis.readByte();
 				switch (c) {
 					case '\r': {
 						if (iState == 0)
@@ -33,7 +33,7 @@ public class WRABufferedReader {
 					}
 					case '\n':{
 						if (iState == 1)
-							iState = 2;
+							return sb.toString();
 						else if (iState == 3)
 							return sb.toString();
 						else if (iState == 0)
@@ -51,7 +51,7 @@ public class WRABufferedReader {
 			e.printStackTrace();
 		}
 		
-		return "";
+		return sb.toString();
 	}
 	
 	public void close() {

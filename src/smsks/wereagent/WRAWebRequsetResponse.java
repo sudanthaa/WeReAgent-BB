@@ -29,7 +29,7 @@ public class WRAWebRequsetResponse {
 			
 			int devider = line.indexOf(':');
 			if (devider > -1) {
-				String sKey = (line.substring(0, devider - 1)).trim();
+				String sKey = (line.substring(0, devider)).trim();
 				String sValue = (line.substring(devider + 1)).trim();
 				if (sKey == "Host") {
 					request.server = sValue;
