@@ -1,6 +1,7 @@
 package smsks.wereagent;
 
-import smsks.wereagent.util.WRABufferedReader;
+import smsks.wereagent.util.WRABufferedDISReader;
+import smsks.wereagent.util.WRABufferedISReader;
 
 public class WRAWebRequsetResponse {
 
@@ -12,7 +13,41 @@ public class WRAWebRequsetResponse {
 	
 	private static final int maxLines = 30;
 	
-	public static WRAWebRequsetResponse extract(WRABufferedReader br) {
+	public static WRAWebRequsetResponse extract(WRABufferedDISReader br) {
+		
+		WRAWebRequsetResponse request = new WRAWebRequsetResponse();
+		
+		int iLine = 0;
+		String line = br.readLine();
+		while (line.length() > 0) {
+			
+			if (iLine == 0) {
+				int devider = line.indexOf(' ');
+				if (devider > -1) {
+					request.requestType = (line.substring(0, devider)).trim();
+				}
+			}
+			
+			int devider = line.indexOf(':');
+			if (devider > -1) {
+				String sKey = (line.substring(0, devider)).trim();
+				String sValue = (line.substring(devider + 1)).trim();
+				if (sKey == "Host") {
+					request.server = sValue;
+				}
+				else if (sKey == "Content-Length") {
+					//
+				}
+			}
+			request.addLine(line);
+			iLine++;
+			line = br.readLine();
+		}
+		return request;
+	}
+	
+	
+	public static WRAWebRequsetResponse extract(WRABufferedISReader br) {
 		
 		WRAWebRequsetResponse request = new WRAWebRequsetResponse();
 		
