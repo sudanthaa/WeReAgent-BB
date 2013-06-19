@@ -31,7 +31,7 @@ public class WRAWebRequsetResponse {
 			if (devider > -1) {
 				String sKey = (line.substring(0, devider)).trim();
 				String sValue = (line.substring(devider + 1)).trim();
-				if (sKey == "Host") {
+				if ("Host".equals(sKey)) {
 					request.server = sValue;
 				}
 				else if (sKey == "Content-Length") {
