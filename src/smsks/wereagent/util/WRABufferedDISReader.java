@@ -3,12 +3,11 @@ package smsks.wereagent.util;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-public class WRABufferedReader {
+public class WRABufferedDISReader {
 
 	DataInputStream dis;
-	int iLastRead = -1;
-	
-	public WRABufferedReader(DataInputStream dis) {
+
+	public WRABufferedDISReader(DataInputStream dis) {
 		this.dis = dis;
 	}
 	
