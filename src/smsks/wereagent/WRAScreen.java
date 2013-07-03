@@ -119,12 +119,14 @@ public final class WRAScreen extends MainScreen {
     }
     
     private boolean stopServer() {
-    	if (server == null)
+    	return true;
+    	
+    	/*if (server == null)
     		return true;
     	
     	server.halt();
     	server = null;
     	serverButton.setLabel(" Start Server ");
-    	return true;
+    	return true;*/
     }
 }
