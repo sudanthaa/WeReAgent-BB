@@ -28,11 +28,14 @@ public class WRAWebRequsetResponse {
 				}
 			}
 			
+			String sHostKey = "Host";
+			
 			int devider = line.indexOf(':');
 			if (devider > -1) {
-				String sKey = (line.substring(0, devider)).trim();
+				String sKey = (line.substring(0, devider));
+				sKey.trim();
 				String sValue = (line.substring(devider + 1)).trim();
-				if (sKey == "Host") {
+				if (sKey.endsWith(sHostKey)) {
 					request.server = sValue;
 				}
 				else if (sKey == "Content-Length") {

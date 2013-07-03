@@ -10,11 +10,6 @@ import javax.microedition.io.SocketConnection;
 import javax.microedition.io.StreamConnection;
 import javax.microedition.io.StreamConnectionNotifier;
 
-import net.rim.device.api.io.transport.ConnectionFactory;
-import net.rim.device.api.io.transport.TransportInfo;
-import net.rim.device.api.io.transport.options.TcpCellularOptions;
-import net.rim.device.api.util.Arrays;
-
 import smsks.wereagent.util.WRABufferedDISReader;
 import smsks.wereagent.util.WRABufferedISReader;
 
@@ -118,6 +113,11 @@ public class WRAServer extends Thread {
 				
 				setRequest(downloaderRequest.getContent());
 				
+				if (downloaderRequest.server.length() == 0) {
+					setStatus("Server could not be decoded");
+					break;
+				}
+				
 				WRAWebRequsetResponse webServerResponse = getServerResponse(downloaderRequest);
 				if (webServerResponse == null) {
 					connDownloader.close();
@@ -177,7 +177,7 @@ public class WRAServer extends Thread {
 	
 	private WRAWebRequsetResponse getServerResponse(WRAWebRequsetResponse downloaderRequest) {
 
-		ConnectionFactory factory = new ConnectionFactory();
+		/*ConnectionFactory factory = new ConnectionFactory();
 		int[] aTransports = { 
 				TransportInfo.TRANSPORT_TCP_WIFI,
 				TransportInfo.TRANSPORT_WAP2,
@@ -207,11 +207,11 @@ public class WRAServer extends Thread {
 				TransportInfo.TRANSPORT_TCP_CELLULAR, tcpOptions);
 		factory.setAttemptsLimit(5);
 		
-		setStatus("Connecting to web server");
+		setStatus("Connecting to web server");*/
 		
 		try {
 			
-			String connString = "socket://" + downloaderRequest.getServer() + ":80";
+			String connString = "socket://" + downloaderRequest.getServer() + ":80;deviceside=true";
 			SocketConnection  sc = (SocketConnection)Connector.open(connString);
 			
 			if (sc == null)
@@ -220,7 +220,7 @@ public class WRAServer extends Thread {
 				return null;
 			}
 			
-			sc.setSocketOption(SocketConnection.LINGER, 5);
+			//sc.setSocketOption(SocketConnection.LINGER, 5);
 			
 			setStatus("Connected to server");
 			InputStream is  = sc.openInputStream();
@@ -228,21 +228,21 @@ public class WRAServer extends Thread {
 			
 			
 			setStatus("Writing reqeust to web server");
-			os.write(downloaderRequest.getContent().getBytes());
+			String downloadRequestFullHeader = downloaderRequest.getContent();
+			os.write(downloadRequestFullHeader.getBytes());
 			os.flush();
 			
 			setStatus("Reading response from web server");
 			WRABufferedISReader br = new WRABufferedISReader(is);
 			WRAWebRequsetResponse reqeust = WRAWebRequsetResponse.extract(br);
 			
+			String downloadResponseFullHeader = reqeust.getContent();
+			setResponse(downloadResponseFullHeader);
+			
 			is.close();
 			os.close();
 			sc.close();
 		   
-			if (reqeust == null) {
-				return null;
-			}
-			
 			return reqeust;
 			
 		} catch (Exception e) {
